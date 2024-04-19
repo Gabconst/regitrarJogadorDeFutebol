@@ -1,7 +1,21 @@
-import os
+class Jogador:
+    def __init__(self, nome, idade, pais, posicao, numero, pe_dominante, time, liga, valor_mercado):
+        self.nome = nome
+        self.idade = idade
+        self.pais = pais
+        self.posicao = posicao
+        self.numero = numero
+        self.pe_dominante = pe_dominante
+        self.time = time
+        self.liga = liga
+        self.valor_mercado = valor_mercado
 
-POSICOES = {
-    "ATA": "Atacante",
+    def __str__(self):
+        return (f'\nDados do Jogador: {self.nome}\nIdade: {self.idade}\nPaís: {self.pais}\nPosição: {self.posicao}\nNúmero: {self.numero}\nPé Dominante: '
+                f'{self.pe_dominante}\nTime: {self.time}\nLiga: {self.liga}\nValor de Mercado: {self.valor_mercado}')
+
+# Dicionário de posições com siglas
+POSICOES_VALIDAS = {
     "MEI": "Meia",
     "DEF": "Defensor",
     "GOL": "Goleiro",
@@ -17,103 +31,85 @@ POSICOES = {
     "SA": "Segundo Atacante"
 }
 
+PES_VALIDOS = {"E": 'Esquerdo', "D": 'Direito', "A": 'Ambos'}
 
-def limpar_tela():
-    os.system('cls' if os.name == 'nt' else 'clear')
+jogadores = []
 
 
-def validar_texto(texto, mensagem):
+def cadastrar_jogador():
+    nome = input('Nome do Jogador: ')
+    idade = int(input('Idade: '))
+    pais = input('País: ')
+
+    print('\nOpções de Posição (Sigla):')
+    for sigla, posicao in POSICOES_VALIDAS.items():
+        print(f'{sigla}: {posicao}')
+
     while True:
-        valor = input(f"{mensagem}: ").strip()
-        if valor and valor.isalpha():
-            return valor
-        print("Erro: Entrada inválida. Digite apenas letras.")
+        posicao_sigla = input('Ponha a posição pela sigla: ').upper()
+        if posicao_sigla in POSICOES_VALIDAS:
+            posicao = POSICOES_VALIDAS[posicao_sigla]
+            break
+        else:
+            print('Sigla de posição inválida!')
 
+    numero = int(input('Número: '))
 
-def validar_numero(mensagem):
     while True:
-        try:
-            valor = int(input(f"{mensagem}: "))
-            return valor
-        except ValueError:
-            print("Erro: Entrada inválida. Digite um número inteiro.")
+        pe_dominante = input('Pé Dominante (E(Esquerdo), D(Direito) ou A(Ambos): ').upper()
+        if pe_dominante in PES_VALIDOS:
+            break
+        else:
+            print('Opção de pé dominante inválida. Tente novamente (E, D ou A).')
+
+    time = input('Time: ')
+    liga = input('Liga: ')
+    valor_mercado = float(input('Valor de Mercado: '))
+
+    jogador = Jogador(nome, idade, pais, posicao, numero, pe_dominante, time, liga, valor_mercado)
+    jogadores.append(jogador)
 
 
-def validar_perna_boa():
-    while True:
-        valor = input("Perna boa (D/E): ").strip().upper()
-        if valor in ("D", "E"):
-            return valor
-        print("Erro: Entrada inválida. Digite D para destro ou E para canhoto.")
+def buscar_jogador():
+    nome = input('Nome do Jogador: ')
+    for jogador in jogadores:
+        if jogador.nome == nome:
+            print(jogador)
+            break
+    else:
+        print('Jogador não encontrado!')
 
-
-def formatar_valor(valor):
-    return f"{valor:,.2f} €"
-
-
-class Jogador:
-    def __init__(self, nome, pais, perna_boa, posicao_principal, posicao_secundaria, idade, clube, liga, valor_mercado):
-        self.nome = nome
-        self.pais = pais
-        self.perna_boa = perna_boa
-        self.posicao_principal = posicao_principal
-        self.posicao_secundaria = posicao_secundaria
-        self.idade = idade
-        self.clube = clube
-        self.liga = liga
-        self.valor_mercado = valor_mercado
-
-    def __str__(self):
-        return f"""
-Nome: {self.nome}
-País de origem: {self.pais}
-Perna boa: {'Destro' if self.perna_boa == 'D' else 'Canhoto'}
-Posição principal: {POSICOES[self.posicao_principal]}
-Posição secundária: {POSICOES[self.posicao_secundaria]}
-Idade: {self.idade} anos
-Clube: {self.clube} ({self.liga})
-Valor de mercado: {formatar_valor(self.valor_mercado)}
-"""
-
-
-def carregar_jogadores():
-    jogadores = []
-    try:
-        with open("jogador.txt", "r") as arquivo:
-            for linha in arquivo:
-                jogador_dados = linha.strip().split(",")
-                jogador = Jogador(*jogador_dados)
-                jogadores.append(jogador)
-    except FileNotFoundError:
-        print("Arquivo de jogadores não encontrado. Criando um novo arquivo...")
-    return jogadores
-
-
-def salvar_jogadores(jogadores):
-    with open("jogador.txt", "w") as arquivo:
+def listar_jogadores():
+    if jogadores:
+        print('\nLista de Jogadores:')
         for jogador in jogadores:
-            arquivo.write(",".join(jogador.__dict__.values()) + "\n")
+            print(f'- {jogador.nome}')
+    else:
+        print('Não há jogadores cadastrados!')
 
 
-def menu_principal():
+def menu():
+
     while True:
-        limpar_tela()
-        print("### Registro de Jogadores de Futebol ###")
-        print("1 - Cadastrar novo jogador")
+        print('\n\nCadastro de Jogadores')
+        print('------------------------')
+        print('1. Cadastrar Jogador')
+        print('2. Buscar Jogador')
+        print('3. Listar Jogadores')
+        print('4. Sair')
 
+        opcao = input('Escolha uma opção: ')
 
-#exemplo:
+        if opcao == '1':
+            cadastrar_jogador()
+        elif opcao == '2':
+            buscar_jogador()
+        elif opcao == '3':
+            listar_jogadores()
+        elif opcao == '4':
+            print('Saindo...')
+            break
+        else:
+            print('Opção inválida!')
 
-messi = Jogador(
-    nome="Lionel Andrés Messi Cuccittini",
-    pais="Argentina",
-    perna_boa="E",
-    posicao_principal="ATA",
-    posicao_secundaria="PD",
-    idade=36,
-    clube="Inter Miami FC",
-    liga="Major-League",
-    valor_mercado=80000000,
-)
-
-print(messi)
+menu()
