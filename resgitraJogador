@@ -1,5 +1,8 @@
+import csv
+
+
 class Jogador:
-    def __init__(self, nome, idade, pais, posicao, numero, pe_dominante, time, liga, valor_mercado):
+    def __init__(self, nome, idade, pais, posicao, numero, pe_dominante, time, liga, valor_mercado, altura):
         self.nome = nome
         self.idade = idade
         self.pais = pais
@@ -9,10 +12,12 @@ class Jogador:
         self.time = time
         self.liga = liga
         self.valor_mercado = valor_mercado
+        self.altura = altura
 
     def __str__(self):
         return (f'\nDados do Jogador: {self.nome}\nIdade: {self.idade}\nPaís: {self.pais}\nPosição: {self.posicao}\nNúmero: {self.numero}\nPé Dominante: '
-                f'{self.pe_dominante}\nTime: {self.time}\nLiga: {self.liga}\nValor de Mercado: {self.valor_mercado}')
+                f'{self.pe_dominante}\nTime: {self.time}\nLiga: {self.liga}\nValor de Mercado: {self.valor_mercado}\nAltura: {self.altura}')
+
 
 POSICOES_VALIDAS = {
     "MEI": "Meia",
@@ -64,19 +69,11 @@ def cadastrar_jogador():
     time = input('Time: ')
     liga = input('Liga: ')
     valor_mercado = float(input('Valor de Mercado: '))
+    altura = float(input('Altura (em cm): '))
 
-    jogador = Jogador(nome, idade, pais, posicao, numero, pe_dominante, time, liga, valor_mercado)
+    jogador = Jogador(nome, idade, pais, posicao, numero, pe_dominante, time, liga, valor_mercado, altura)
     jogadores.append(jogador)
 
-
-def buscar_jogador():
-    nome = input('Nome do Jogador: ')
-    for jogador in jogadores:
-        if jogador.nome == nome:
-            print(jogador)
-            break
-    else:
-        print('Jogador não encontrado!')
 
 def listar_jogadores():
     if jogadores:
@@ -87,15 +84,150 @@ def listar_jogadores():
         print('Não há jogadores cadastrados!')
 
 
+def salvar_jogadores():
+    with open('jogadores.csv', 'w', newline='') as arquivo:
+        escritor = csv.writer(arquivo)
+        escritor.writerow(["Nome", "Idade", "País", "Posição", "Número", "Pé Dominante", "Time", "Liga", "Valor de Mercado", "altura"])
+        for jogador in jogadores:
+            escritor.writerow([jogador.nome, jogador.idade, jogador.pais, jogador.posicao, jogador.numero,
+                               jogador.pe_dominante, jogador.time, jogador.liga, jogador.valor_mercado, jogador.altura])
+
+
+def carregar_jogadores():
+    try:
+        with open('jogadores.csv', 'r') as arquivo:
+            leitor = csv.reader(arquivo)
+            next(leitor)
+            for linha in leitor:
+                nome, idade, pais, posicao, numero, pe_dominante, time, liga, valor_mercado, altura = linha
+                jogador = Jogador(nome, int(idade), pais, posicao, int(numero), pe_dominante, time, liga, float(valor_mercado), float(altura))
+                jogadores.append(jogador)
+    except FileNotFoundError:
+        pass
+
+
+def modificar_jogador():
+    if not jogadores:
+        print('Não há jogadores cadastrados!')
+        return
+
+    print('\nLista de Jogadores:')
+    for idx, jogador in enumerate(jogadores):
+        print(f'{idx}. {jogador.nome}')
+
+    try:
+        idx_jogador = int(input('\nDigite o número correspondente ao jogador que deseja modificar: '))
+
+        if 0 <= idx_jogador < len(jogadores):
+            jogador = jogadores[idx_jogador]
+            print(f'\nModificando jogador: {jogador.nome}')
+            print('O que deseja modificar?')
+            print('1. Idade')
+            print('2. País')
+            print('3. Posição')
+            print('4. Número')
+            print('5. Pé Dominante')
+            print('6. Time')
+            print('7. Liga')
+            print('8. Valor de Mercado')
+            print('9. Altura')
+            print('0. Sair da modificação')
+
+            opcao = input('Escolha uma opção: ')
+
+            if opcao == '1':
+                jogador.idade = int(input('Nova Idade: '))
+            elif opcao == '2':
+                jogador.pais = input('Novo País: ')
+            elif opcao == '3':
+                print('\nOpções de Posição (Sigla):')
+                for sigla, posicao in POSICOES_VALIDAS.items():
+                    print(f'{sigla}: {posicao}')
+                posicao_sigla = input('Nova Posição (Sigla): ').upper()
+                if posicao_sigla in POSICOES_VALIDAS:
+                    jogador.posicao = POSICOES_VALIDAS[posicao_sigla]
+                else:
+                    print('Sigla de posição inválida!')
+            elif opcao == '4':
+                jogador.numero = int(input('Novo Número: '))
+            elif opcao == '5':
+                jogador.pe_dominante = input('Novo Pé Dominante (E, D ou A): ').upper()
+                while jogador.pe_dominante not in PES_VALIDOS:
+                    print('Opção de pé dominante inválida. Tente novamente (E, D ou A).')
+                    jogador.pe_dominante = input('Novo Pé Dominante (E, D ou A): ').upper()
+            elif opcao == '6':
+                jogador.time = input('Novo Time: ')
+            elif opcao == '7':
+                jogador.liga = input('Nova Liga: ')
+            elif opcao == '8':
+                jogador.valor_mercado = float(input('Novo Valor de Mercado: '))
+            elif opcao == '9':
+                jogador.altura = float(input('Nova Altura (em cm): '))
+            elif opcao == '0':
+                pass
+            else:
+                print('Opção inválida!')
+
+            print('Informações atualizadas:')
+            print(jogador)
+        else:
+            print('Número de jogador inválido!')
+    except ValueError:
+        print('Digite um número válido!')
+
+
+def apagar_jogador():
+    if not jogadores:
+        print('Não há jogadores cadastrados!')
+        return
+
+    print('\nLista de Jogadores:')
+    for idx, jogador in enumerate(jogadores):
+        print(f'{idx}. {jogador.nome}')
+
+    try:
+        idx_jogador = int(input('\nDigite o número correspondente ao jogador que deseja apagar: '))
+
+        if 0 <= idx_jogador < len(jogadores):
+            jogador_removido = jogadores.pop(idx_jogador)
+            print(f'Jogador {jogador_removido.nome} apagado com sucesso!')
+        else:
+            print('Número de jogador inválido!')
+    except ValueError:
+        print('Digite um número válido!')
+
+
+def buscar_jogador():
+    if not jogadores:
+        print('Não tem nenhum jogador cadastrado!')
+        return
+
+    print('\nLista de Jogadores:')
+    for idx, jogador in enumerate(jogadores):
+        print(f'{idx}: {jogador.nome}')
+
+    try:
+        idx_jogador = int(input('\nDigite o número correspondente ao jogador que quer buscar: '))
+        if 0 <= idx_jogador < len(jogadores):
+            print(jogadores[idx_jogador])
+        else:
+            print('Índice de jogador inválido!')
+    except ValueError:
+        print('Digite um número válido!')
+
+
 def menu():
+    carregar_jogadores()
 
     while True:
         print('\n\nCadastro de Jogadores')
-        print('------------------------')
+        print('-' * 25)
         print('1. Cadastrar Jogador')
-        print('2. Buscar Jogador')
+        print('2. Buscar Jogador por Número')
         print('3. Listar Jogadores')
-        print('4. Sair')
+        print('4. Modificar Jogador')
+        print('5. Apagar Jogador')
+        print('6. Salvar e Sair')
 
         opcao = input('Escolha uma opção: ')
 
@@ -106,9 +238,15 @@ def menu():
         elif opcao == '3':
             listar_jogadores()
         elif opcao == '4':
+            modificar_jogador()
+        elif opcao == '5':
+            apagar_jogador()
+        elif opcao == '6':
+            salvar_jogadores()
             print('Saindo...')
             break
         else:
             print('Opção inválida!')
+
 
 menu()
