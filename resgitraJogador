@@ -110,9 +110,9 @@ messi = Jogador(
     perna_boa="E",
     posicao_principal="ATA",
     posicao_secundaria="PD",
-    idade=35,
-    clube="Paris Saint-Germain",
-    liga="Ligue 1",
+    idade=36,
+    clube="Inter Miami FC",
+    liga="Major-League",
     valor_mercado=80000000,
 )
 
