@@ -21,7 +21,7 @@ class Jogador:
 
 POSICOES_VALIDAS = {
     "MEI": "Meia",
-    "DEF": "Defensor",
+    "ZAG": "Zagueiro",
     "GOL": "Goleiro",
     "VOL": "Volante",
     "LE": "Lateral Esquerdo",
