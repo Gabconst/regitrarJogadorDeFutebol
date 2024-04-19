@@ -14,7 +14,6 @@ class Jogador:
         return (f'\nDados do Jogador: {self.nome}\nIdade: {self.idade}\nPaís: {self.pais}\nPosição: {self.posicao}\nNúmero: {self.numero}\nPé Dominante: '
                 f'{self.pe_dominante}\nTime: {self.time}\nLiga: {self.liga}\nValor de Mercado: {self.valor_mercado}')
 
-# Dicionário de posições com siglas
 POSICOES_VALIDAS = {
     "MEI": "Meia",
     "DEF": "Defensor",
